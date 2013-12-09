@@ -14,13 +14,25 @@ if docker -H=$DOCKER_API_ENDPOINT ps | grep "hectcastro/riak" >/dev/null; then
   exit 1
 fi
 
-docker -H=$DOCKER_API_ENDPOINT run -name riak01 -d hectcastro/riak
-docker -H=$DOCKER_API_ENDPOINT run -name riak02 -link riak01:seed -d hectcastro/riak
-docker -H=$DOCKER_API_ENDPOINT run -name riak03 -link riak01:seed -d hectcastro/riak
-docker -H=$DOCKER_API_ENDPOINT run -name riak04 -link riak01:seed -d hectcastro/riak
-docker -H=$DOCKER_API_ENDPOINT run -name riak05 -link riak01:seed -d hectcastro/riak
+for index in `seq 1 5`;
+do
+  if [ "$index" -gt "1" ] ; then
+    docker -H=$DOCKER_API_ENDPOINT run -name riak0${index} -link riak01:seed -d hectcastro/riak
+  else
+    docker -H=$DOCKER_API_ENDPOINT run -name riak0${index} -d hectcastro/riak
+  fi
 
-SEED_IP_ADDRESS=$(docker -H=$DOCKER_API_ENDPOINT inspect $(docker -H=$DOCKER_API_ENDPOINT ps | grep riak01 | cut -d" " -f1) | grep IPAddress | cut -d '"' -f4)
+  IP_ADDRESS=$(docker -H=$DOCKER_API_ENDPOINT inspect $(docker -H=$DOCKER_API_ENDPOINT ps | grep riak0${index} | cut -d" " -f1) | grep IPAddress | head -n1 | cut -d '"' -f4 | tr -d "\n")
+
+  until curl -s "http://$IP_ADDRESS:8098/ping" | grep "OK" >/dev/null;
+  do
+    sleep 3
+  done
+done
+
+sleep 10
+
+SEED_IP_ADDRESS=$(docker -H=$DOCKER_API_ENDPOINT inspect $(docker -H=$DOCKER_API_ENDPOINT ps | grep riak01 | cut -d" " -f1) | grep IPAddress | cut -d '"' -f4 | tr -d "\n")
 
 sshpass -p "basho" \
   ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -o "LogLevel quiet" root@$SEED_IP_ADDRESS \

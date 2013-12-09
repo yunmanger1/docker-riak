@@ -1,7 +1,7 @@
 all: riak-container
 
 riak-container:
-	docker -H=$$DOCKER_API_HOST build -t "hectcastro/riak" .
+	docker -H=$$DOCKER_API_ENDPOINT build -t "hectcastro/riak" .
 
 start-cluster:
 	./bin/start-cluster.sh

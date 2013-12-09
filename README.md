@@ -33,7 +33,7 @@ $ sudo apt-get install -y git curl make sshpass
 ### Clone repository
 
 ```bash
-$ export DOCKER_API_HOST="tcp://192.168.101.101:4242"
+$ export DOCKER_API_ENDPOINT="tcp://192.168.101.101:4242"
 $ git clone https://github.com/hectcastro/docker-riak.git
 $ cd docker-riak
 $ make riak-container

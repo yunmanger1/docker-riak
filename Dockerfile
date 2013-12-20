@@ -41,7 +41,7 @@ RUN echo "ulimit -n 4096" >> /etc/default/riak
 # sysctl
 RUN echo "vm.swappiness = 0" > /etc/sysctl.d/riak.conf
 RUN echo "net.ipv4.tcp_max_syn_backlog = 40000" >> /etc/sysctl.d/riak.conf
-RUN echo "net.core.somaxconn=4000" >> /etc/sysctl.d/riak.conf
+RUN echo "net.core.somaxconn = 40000" >> /etc/sysctl.d/riak.conf
 RUN echo "net.ipv4.tcp_timestamps = 0" >> /etc/sysctl.d/riak.conf
 RUN echo "net.ipv4.tcp_sack = 1" >> /etc/sysctl.d/riak.conf
 RUN echo "net.ipv4.tcp_window_scaling = 1" >> /etc/sysctl.d/riak.conf
